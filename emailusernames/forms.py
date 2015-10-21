@@ -1,4 +1,4 @@
-from django import forms
+from django import forms, VERSION
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm, AuthenticationForm
 from django.contrib.admin.forms import AdminAuthenticationForm
@@ -22,7 +22,8 @@ class EmailAuthenticationForm(AuthenticationForm):
 
     def __init__(self, request=None, *args, **kwargs):
         super(EmailAuthenticationForm, self).__init__(request, *args, **kwargs)
-        del self.fields['username']
+        if self.fields.get('username'):
+            del self.fields['username']
         self.fields.keyOrder = ['email', 'password']
 
     def clean(self):
@@ -50,7 +51,8 @@ class EmailAdminAuthenticationForm(AdminAuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         super(EmailAdminAuthenticationForm, self).__init__(*args, **kwargs)
-        del self.fields['username']
+        if self.fields.get('username'):
+            del self.fields['username']
 
     def clean(self):
         email = self.cleaned_data.get('email')
@@ -80,7 +82,8 @@ class EmailUserCreationForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(EmailUserCreationForm, self).__init__(*args, **kwargs)
-        del self.fields['username']
+        if self.fields.get('username'):
+            del self.fields['username']
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -103,8 +106,10 @@ class EmailUserChangeForm(UserChangeForm):
 
     class Meta:
         model = User
-        fields = '__all__'
+        if VERSION[1] > 7:
+            fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super(EmailUserChangeForm, self).__init__(*args, **kwargs)
-        del self.fields['username']
+        if self.fields.get('username'):
+            del self.fields['username']
