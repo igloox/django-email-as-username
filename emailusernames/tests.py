@@ -71,4 +71,7 @@ class ExistingUserTests(TestCase):
         self.assertEquals(ctx.exception.message, 'user email is not unique')
 
     def test_user_unicode(self):
-        self.assertEquals(unicode(self.user), self.email)
+        if isinstance(self.email, str):
+            self.assertEquals(str(self.user), self.email)
+        else:
+            self.assertEquals(unicode(self.user), self.email)
