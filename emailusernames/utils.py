@@ -44,6 +44,7 @@ def user_exists(email, queryset=None):
 
 _DUPLICATE_USERNAME_ERRORS = (
     'column username is not unique',
+    'UNIQUE constraint failed: auth_user.username',
     'duplicate key value violates unique constraint "auth_user_username_key"\n'
 )
 
@@ -57,7 +58,7 @@ def create_user(email, password=None, is_staff=None, is_active=None):
         user = User.objects.create_user(email, email, password)
     except IntegrityError as err:
         regexp = '|'.join(re.escape(e) for e in _DUPLICATE_USERNAME_ERRORS)
-        if re.match(regexp, err.message):
+        if re.match(regexp, str(err)):
             raise IntegrityError('user email is not unique')
         raise
 
