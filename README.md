@@ -218,6 +218,12 @@ tests you'll need to find a way to explicitly disable them.
 Changelog
 =========
 
+1.7.0
+-----
+
+* Fix compat with Django 1.7 & 1.8
+* Fix compat with python 3.5
+
 1.6.7
 -----
 
