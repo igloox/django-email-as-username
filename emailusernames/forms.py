@@ -36,7 +36,9 @@ class EmailAuthenticationForm(AuthenticationForm):
                 raise forms.ValidationError(self.message_incorrect_password)
             if not self.user_cache.is_active:
                 raise forms.ValidationError(self.message_inactive)
-        self.check_for_test_cookie()
+        #check_for_test_cookie was removed in django 1.7
+        if hasattr(self, 'check_for_test_cookie'):
+            self.check_for_test_cookie()
         return self.cleaned_data
 
 
