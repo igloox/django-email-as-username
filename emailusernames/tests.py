@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
 from emailusernames.utils import create_user
+from emailusernames.forms import (
+    EmailAuthenticationForm, EmailAdminAuthenticationForm)
 
 
 class CreateUserTests(TestCase):
@@ -81,3 +83,44 @@ class ExistingUserTests(TestCase):
             self.assertEquals(str(self.user), self.email)
         else:
             self.assertEquals(unicode(self.user), self.email)
+
+
+class EmailAuthenticationFormTests(TestCase):
+    def setUp(self):
+        self.email = 'user@example.com'
+        self.password = 'password'
+        self.user = create_user(self.email, self.password)
+
+    def test_login(self):
+        form = EmailAuthenticationForm(
+            data={'email': self.email, 'password': self.password}
+        )
+        self.assertTrue(form.is_valid())
+
+
+class EmailAdminAuthenticationFormTests(TestCase):
+    def setUp(self):
+        self.email = 'user@example.com'
+        self.password = 'password'
+        self.user = create_user(self.email, self.password)
+
+    def test_non_staff_login(self):
+        """
+        The form should raise an error because our user isn't staff
+        """
+        form = EmailAdminAuthenticationForm(
+            data={'email': self.email, 'password': self.password}
+        )
+        self.assertFalse(form.is_valid())
+
+    def test_staff_login(self):
+        """
+        Promote our user to staff then try again - the form should validate.
+        """
+        self.user.is_staff = True
+        self.user.save()
+
+        form = EmailAdminAuthenticationForm(
+            data={'email': self.email, 'password': self.password}
+        )
+        self.assertTrue(form.is_valid())
